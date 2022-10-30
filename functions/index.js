@@ -1,6 +1,7 @@
 require('dotenv').config();
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+// const openai = require('./openai');
 admin.initializeApp();
 
 // Database Reference
@@ -9,7 +10,7 @@ const dbRef = admin.firestore().doc('tokens/tw');
 // Status check for serverless functions
 exports.checkStatus = functions.https.onRequest((request, response) => {
   functions.logger.info('Check Status!', { structuredData: true });
-  response.json({
+  response.status(200).json({
     success: true,
     author: process.env.AUTHOR,
     msg: 'Serverless functions online!',
@@ -79,4 +80,26 @@ exports.callback = functions.https.onRequest(async (request, response) => {
 });
 
 // STEP 3 - Refresh tokens and post tweets
-exports.tweet = functions.https.onRequest((request, response) => {});
+exports.tweet = functions.https.onRequest(async (request, response) => {
+  // Logger
+  functions.logger.info('Tweet Route!', { structuredData: true });
+
+  // Function Starts
+  // If some time has passed, we would need a new access token obtained by calling twitter api with existing refresh token.
+  const { refreshToken } = (await dbRef.get()).data();
+
+  const {
+    client: refreshedClient,
+    accessToken,
+    refreshToken: newRefreshToken,
+  } = await twitterClient.refreshOAuth2Token(refreshToken);
+
+  // Save the new refresh token to the database
+  await dbRef.set({ accessToken, refreshToken: newRefreshToken });
+
+  // Generate Tweets
+  const message = "Hello Twitter!!"
+  const { data } = await refreshedClient.v2.tweet(message);
+
+  response.status(200).json({ success: true, data });
+});
