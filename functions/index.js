@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 // Database Reference
-const dbRef = admin.firestore().doc('tw/tokens');
+const dbRef = admin.firestore().doc('tokens/tw');
 
 // Status check for serverless functions
 exports.checkStatus = functions.https.onRequest((request, response) => {
@@ -28,6 +28,10 @@ const callBackURL = process.env.CB_URL;
 
 // STEP 1 - Auth URL
 exports.auth = functions.https.onRequest(async (request, response) => {
+  // Logger
+  functions.logger.info('Auth Route!', { structuredData: true });
+
+  // Function Starts
   const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(
     callBackURL,
     {
@@ -41,7 +45,16 @@ exports.auth = functions.https.onRequest(async (request, response) => {
 });
 
 // STEP 2 - Verify callback code, store access_token
-exports.callback = functions.https.onRequest((request, response) => {});
+exports.callback = functions.https.onRequest((request, response) => {
+  // Logger
+  functions.logger.info('Callback Route!', { structuredData: true });
+
+  // Functions Starts
+  response.json({
+    success: true,
+    msg: 'Welcome!! hello from Firebase.',
+  });
+});
 
 // STEP 3 - Refresh tokens and post tweets
 exports.tweet = functions.https.onRequest((request, response) => {});
