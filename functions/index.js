@@ -1,7 +1,7 @@
 require('dotenv').config();
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-// const openai = require('./openai');
+const { createTweet } = require('./openai');
 admin.initializeApp();
 
 // Database Reference
@@ -97,9 +97,12 @@ exports.tweet = functions.https.onRequest(async (request, response) => {
   // Save the new refresh token to the database
   await dbRef.set({ accessToken, refreshToken: newRefreshToken });
 
-  // Generate Tweets
-  const msg = 'This is the new message from firebase serverless functions.';
-  const { data } = await refreshedClient.v2.tweet('New Message!!!');
+  // Use GPT3 to create new tweet
+  const newTweet = (await createTweet()).data.choices[0].text;
 
+  // Publish that tweet to twitter using Oauth2.0 v2 API
+  const { data } = await refreshedClient.v2.tweet(newTweet);
+
+  // Send response
   response.status(200).json({ success: true, data });
 });
