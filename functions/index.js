@@ -45,15 +45,37 @@ exports.auth = functions.https.onRequest(async (request, response) => {
 });
 
 // STEP 2 - Verify callback code, store access_token
-exports.callback = functions.https.onRequest((request, response) => {
+exports.callback = functions.https.onRequest(async (request, response) => {
   // Logger
   functions.logger.info('Callback Route!', { structuredData: true });
 
   // Functions Starts
-  response.json({
-    success: true,
-    msg: 'Welcome!! hello from Firebase.',
+  const { state, code } = request.query;
+
+  const dbSnapshot = await dbRef.get();
+  const { codeVerifier, state: storedState } = dbSnapshot.data();
+
+  if (state !== storedState) {
+    return response
+      .status(400)
+      .json({ success: false, msg: 'Stored tokens do not match!' });
+  }
+
+  const {
+    client: loggedClient,
+    accessToken,
+    refreshToken,
+  } = await twitterClient.loginWithOAuth2({
+    code,
+    codeVerifier,
+    redirectUri: callBackURL,
   });
+
+  await dbRef.set({ accessToken, refreshToken });
+
+  // Can start using the client if we want
+  const { data } = await loggedClient.v2.me();
+  response.status(200).json({ success: false, data });
 });
 
 // STEP 3 - Refresh tokens and post tweets
