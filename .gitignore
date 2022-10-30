@@ -8,3 +8,6 @@ node_modules/
 .env
 .env.env
 .env.development
+
+# Debug Logs
+firebase-debug.log
