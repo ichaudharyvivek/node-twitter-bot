@@ -98,8 +98,8 @@ exports.tweet = functions.https.onRequest(async (request, response) => {
   await dbRef.set({ accessToken, refreshToken: newRefreshToken });
 
   // Generate Tweets
-  const message = "Hello Twitter!!"
-  const { data } = await refreshedClient.v2.tweet(message);
+  const msg = 'This is the new message from firebase serverless functions.';
+  const { data } = await refreshedClient.v2.tweet('New Message!!!');
 
   response.status(200).json({ success: true, data });
 });
