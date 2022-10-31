@@ -18,9 +18,6 @@ exports.createTweet = () =>
   openai.createCompletion({
     model: 'text-davinci-002',
     prompt: 'write something related to #tech',
-    temperature: 0,
+    temperature: 0.9,
     max_tokens: 150,
-    top_p: 1.0,
-    frequency_penalty: 0.0,
-    presence_penalty: 0.0,
   });
