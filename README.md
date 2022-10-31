@@ -1,3 +1,2 @@
 # node-twitter-bot
-Project upcoming. Work in progress.\
-Note: Made this project using gitpod.
+GPT-3 powered AI Twitter bot to generate human-like tweets.
