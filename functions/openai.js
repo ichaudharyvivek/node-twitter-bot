@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require('openai');
+const { generatePrompt } = require('./utils/createPrompt');
 
 // Setup Open AI Configurations
 const configuration = new Configuration({
@@ -17,7 +18,7 @@ const openai = new OpenAIApi(configuration);
 exports.createTweet = () =>
   openai.createCompletion({
     model: 'text-davinci-002',
-    prompt: 'write something related to #tech',
-    temperature: 0.9,
-    max_tokens: 150,
+    prompt: generatePrompt(), // Or write any string instead of this function.
+    temperature: 0.7,
+    max_tokens: 64,
   });

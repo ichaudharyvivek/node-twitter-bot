@@ -13,3 +13,6 @@ node_modules/
 
 # Debug Logs
 firebase-debug.log
+
+# Secret Files
+functions/utils/createPrompt.js
