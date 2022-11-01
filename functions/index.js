@@ -106,3 +106,6 @@ exports.tweet = functions.https.onRequest(async (request, response) => {
   // Send response
   response.status(200).json({ success: true, data });
 });
+
+// STEP 4 - Set up cron job to run the tweets automatically
+exports.scheduleTweet = () => {};
