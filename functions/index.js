@@ -108,6 +108,7 @@ exports.tweet = functions.https.onRequest(async (request, response) => {
 });
 
 // STEP 4 - Set up cron job to run the tweets automatically
+// Visit https://crontab.guru/ to generate cron job syntax with ease.
 // Cron Job Details:
 //    - 0 11,18 * * 1,3,5
 //    - At minute 0 past hour 11 and 18 on Monday, Wednesday, Friday
