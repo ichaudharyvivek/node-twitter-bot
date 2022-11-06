@@ -2,7 +2,7 @@
 tasks:
   - name: 'Gipod Main Terminal - 1'
     before: npm i -g firebase-tools
-    init: npm i # runs during prebuild
+    init: cd functions && npm i # runs during prebuild
     command: echo 'start script'
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
