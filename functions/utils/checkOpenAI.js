@@ -1,5 +1,5 @@
-const { createTweet } = require('../openai');
-const { generatePrompt } = require('./createPrompt');
+const { createTweet } = require("../openai");
+const { generatePrompt } = require("./createPrompt");
 
 // NOTE: This is a function to test the Open AI endpoint w/o running Firebase.
 const checkAPI = async () => {

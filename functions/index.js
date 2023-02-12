@@ -1,24 +1,25 @@
-require('dotenv').config();
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const { createTweet } = require('./openai');
+require("dotenv").config();
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+const { createTweet } = require("./openai");
+const { async } = require("@firebase/util");
 admin.initializeApp();
 
 // Database Reference
-const dbRef = admin.firestore().doc('tokens/tw');
+const dbRef = admin.firestore().doc("tokens/tw");
 
 // Status check for serverless functions
 exports.checkStatus = functions.https.onRequest((request, response) => {
-  functions.logger.info('Check Status!', { structuredData: true });
+  functions.logger.info("Check Status!", { structuredData: true });
   response.status(200).json({
     success: true,
     author: process.env.AUTHOR,
-    msg: 'Serverless functions online!',
+    msg: "Serverless functions online!",
   });
 });
 
 // Twitter API Init
-const twitterApi = require('twitter-api-v2').default;
+const twitterApi = require("twitter-api-v2").default;
 const twitterClient = new twitterApi({
   clientId: process.env.TW_CLIENT_ID,
   clientSecret: process.env.TW_CLIENT_SECRET,
@@ -30,13 +31,13 @@ const callBackURL = process.env.CB_URL;
 // STEP 1 - Auth URL
 exports.auth = functions.https.onRequest(async (request, response) => {
   // Logger
-  functions.logger.info('Auth Route!', { structuredData: true });
+  functions.logger.info("Auth Route!", { structuredData: true });
 
   // Function Starts
   const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(
     callBackURL,
     {
-      scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
+      scope: ["tweet.read", "tweet.write", "users.read", "offline.access"],
     }
   );
 
@@ -48,7 +49,7 @@ exports.auth = functions.https.onRequest(async (request, response) => {
 // STEP 2 - Verify callback code, store access_token
 exports.callback = functions.https.onRequest(async (request, response) => {
   // Logger
-  functions.logger.info('Callback Route!', { structuredData: true });
+  functions.logger.info("Callback Route!", { structuredData: true });
 
   // Functions Starts
   const { state, code } = request.query;
@@ -59,7 +60,7 @@ exports.callback = functions.https.onRequest(async (request, response) => {
   if (state !== storedState) {
     return response
       .status(400)
-      .json({ success: false, msg: 'Stored tokens do not match!' });
+      .json({ success: false, msg: "Stored tokens do not match!" });
   }
 
   const {
@@ -82,7 +83,7 @@ exports.callback = functions.https.onRequest(async (request, response) => {
 // STEP 3 - Refresh tokens and post tweets
 exports.tweet = functions.https.onRequest(async (request, response) => {
   // Logger
-  functions.logger.info('Tweet Route!', { structuredData: true });
+  functions.logger.info("Tweet Route!", { structuredData: true });
 
   // Function Starts
   // If some time has passed, we would need a new access token obtained by calling twitter api with existing refresh token.
@@ -112,4 +113,9 @@ exports.tweet = functions.https.onRequest(async (request, response) => {
 // Cron Job Details:
 //    - 0 11,18 * * 1,3,5
 //    - At minute 0 past hour 11 and 18 on Monday, Wednesday, Friday
-exports.scheduleTweet = () => {};
+exports.scheduleTweet = functions.pubsub
+  .schedule("every 1 minute")
+  .onRun(async (context) => {
+    console.log("This pub/sub runs every 1 minute.");
+    console.log(context);
+  });

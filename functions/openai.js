@@ -1,6 +1,6 @@
-require('dotenv').config();
-const { Configuration, OpenAIApi } = require('openai');
-const { generatePrompt } = require('./utils/createPrompt');
+require("dotenv").config();
+const { Configuration, OpenAIApi } = require("openai");
+const { generatePrompt } = require("./utils/createPrompt");
 
 // Setup Open AI Configurations
 const configuration = new Configuration({
@@ -17,7 +17,7 @@ const openai = new OpenAIApi(configuration);
 //       Every request you make to the API is chargeable. Use with care.
 exports.createTweet = () =>
   openai.createCompletion({
-    model: 'text-davinci-002',
+    model: "text-davinci-002",
     prompt: generatePrompt(), // Or write any string instead of this function.
     temperature: 0.7,
     max_tokens: 64,
