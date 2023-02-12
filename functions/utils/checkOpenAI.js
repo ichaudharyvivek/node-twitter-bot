@@ -11,4 +11,4 @@ const checkAPI = async () => {
 console.log(generatePrompt());
 
 // Call this function when you are ready. Each execution to Open AI is chargeable.
-// checkAPI();
+checkAPI();

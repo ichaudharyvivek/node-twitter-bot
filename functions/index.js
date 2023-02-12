@@ -2,7 +2,6 @@ require("dotenv").config();
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { createTweet } = require("./openai");
-const { async } = require("@firebase/util");
 admin.initializeApp();
 
 // Database Reference
